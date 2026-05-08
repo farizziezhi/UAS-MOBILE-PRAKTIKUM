@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../utils/constants.dart';
 import 'home_screen.dart';
 import 'shop_screen.dart';
-import 'tools_screen.dart';
+import 'list_pokemon_screen.dart';
 import 'profile_screen.dart';
 
 /// MainScreen — shell utama aplikasi dengan BottomNavigationBar.
@@ -20,8 +20,8 @@ class _MainScreenState extends State<MainScreen> {
   /// Daftar halaman yang ditampilkan sesuai tab aktif.
   final List<Widget> _pages = const [
     HomeScreen(),
+    ListPokemonScreen(),
     ShopScreen(),
-    ToolsScreen(),
     ProfileScreen(),
   ];
 
@@ -67,19 +67,19 @@ class _MainScreenState extends State<MainScreen> {
           elevation: 0,
           items: const [
             BottomNavigationBarItem(
+              icon: Icon(Icons.home_outlined),
+              activeIcon: Icon(Icons.home),
+              label: 'Home',
+            ),
+            BottomNavigationBarItem(
               icon: Icon(Icons.catching_pokemon_outlined),
               activeIcon: Icon(Icons.catching_pokemon),
-              label: 'Home',
+              label: 'List',
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.store_outlined),
               activeIcon: Icon(Icons.store),
               label: 'Shop',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.build_outlined),
-              activeIcon: Icon(Icons.build),
-              label: 'Tools',
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.person_outline),
