@@ -22,6 +22,7 @@ class _ListPokemonScreenState extends State<ListPokemonScreen> {
   bool _isLoading = true;
   String? _errorMessage;
   bool _isGrid = false;
+  String _sortType = 'id';
 
   @override
   void initState() {
@@ -46,7 +47,7 @@ class _ListPokemonScreenState extends State<ListPokemonScreen> {
       final list = await _controller.fetchPokemonList();
       setState(() {
         _allPokemon = list;
-        _filteredPokemon = list;
+        _filteredPokemon = _controller.sortPokemon(list, _sortType);
         _isLoading = false;
       });
     } catch (e) {
@@ -58,11 +59,13 @@ class _ListPokemonScreenState extends State<ListPokemonScreen> {
   }
 
   void _onSearchChanged() {
+    _applyFilterAndSort();
+  }
+
+  void _applyFilterAndSort() {
+    final filtered = _controller.filterPokemon(_allPokemon, _searchController.text);
     setState(() {
-      _filteredPokemon = _controller.filterPokemon(
-        _allPokemon,
-        _searchController.text,
-      );
+      _filteredPokemon = _controller.sortPokemon(filtered, _sortType);
     });
   }
 
@@ -104,37 +107,100 @@ class _ListPokemonScreenState extends State<ListPokemonScreen> {
   Widget _buildSearchBar() {
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
-      child: TextField(
-        controller: _searchController,
-        decoration: InputDecoration(
-          hintText: 'Cari nama atau nomor Pokémon...',
-          hintStyle: GoogleFonts.poppins(
-            fontSize: 13,
-            color: AppColors.textSecondary,
+      child: Row(
+        children: [
+          // ── Search Field ──
+          Expanded(
+            child: TextField(
+              controller: _searchController,
+              decoration: InputDecoration(
+                hintText: 'Cari nama atau nomor...',
+                hintStyle: GoogleFonts.poppins(
+                  fontSize: 13,
+                  color: AppColors.textSecondary,
+                ),
+                prefixIcon: const Icon(Icons.search, color: AppColors.greyMedium),
+                suffixIcon: _searchController.text.isNotEmpty
+                    ? IconButton(
+                        icon: const Icon(Icons.clear, color: AppColors.greyMedium),
+                        onPressed: () => _searchController.clear(),
+                      )
+                    : null,
+                filled: true,
+                fillColor: AppColors.surface,
+                contentPadding: const EdgeInsets.symmetric(vertical: 0),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide.none,
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(color: AppColors.greyLight),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: const BorderSide(color: AppColors.primary),
+                ),
+              ),
+            ),
           ),
-          prefixIcon: const Icon(Icons.search, color: AppColors.greyMedium),
-          suffixIcon: _searchController.text.isNotEmpty
-              ? IconButton(
-                  icon: const Icon(Icons.clear, color: AppColors.greyMedium),
-                  onPressed: () => _searchController.clear(),
-                )
-              : null,
-          filled: true,
-          fillColor: AppColors.surface,
-          contentPadding: const EdgeInsets.symmetric(vertical: 0),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide.none,
+          const SizedBox(width: 8),
+
+          // ── Sort Button ──
+          PopupMenuButton<String>(
+            onSelected: (value) {
+              _sortType = value;
+              _applyFilterAndSort();
+            },
+            tooltip: 'Urutkan',
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            itemBuilder: (_) => [
+              _buildSortMenuItem('id', Icons.tag, 'Nomor (Default)'),
+              _buildSortMenuItem('az', Icons.sort_by_alpha, 'A → Z'),
+              _buildSortMenuItem('za', Icons.sort_by_alpha, 'Z → A'),
+            ],
+            child: Container(
+              width: 44,
+              height: 44,
+              decoration: BoxDecoration(
+                color: _sortType != 'id' ? AppColors.primary : AppColors.surface,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: AppColors.greyLight),
+              ),
+              child: Icon(
+                Icons.sort,
+                color: _sortType != 'id' ? Colors.white : AppColors.greyMedium,
+                size: 22,
+              ),
+            ),
           ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide(color: AppColors.greyLight),
+        ],
+      ),
+    );
+  }
+
+  PopupMenuItem<String> _buildSortMenuItem(String value, IconData icon, String label) {
+    final isActive = _sortType == value;
+    return PopupMenuItem<String>(
+      value: value,
+      child: Row(
+        children: [
+          Icon(icon, size: 18,
+              color: isActive ? AppColors.primary : AppColors.greyMedium),
+          const SizedBox(width: 10),
+          Text(
+            label,
+            style: GoogleFonts.poppins(
+              fontSize: 13,
+              fontWeight: isActive ? FontWeight.w700 : FontWeight.w400,
+              color: isActive ? AppColors.primary : AppColors.textPrimary,
+            ),
           ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: const BorderSide(color: AppColors.primary),
-          ),
-        ),
+          if (isActive) ...[
+            const Spacer(),
+            const Icon(Icons.check, size: 16, color: AppColors.primary),
+          ],
+        ],
       ),
     );
   }

@@ -51,4 +51,28 @@ class PokemonListController {
       return name.contains(query) || id.contains(query);
     }).toList();
   }
+
+  /// Sort list Pokémon berdasarkan tipe urutan.
+  /// [sortType]: 'id' | 'az' | 'za'
+  List<Map<String, dynamic>> sortPokemon(
+    List<Map<String, dynamic>> pokemon,
+    String sortType,
+  ) {
+    final sorted = List<Map<String, dynamic>>.from(pokemon);
+    switch (sortType) {
+      case 'az':
+        sorted.sort((a, b) =>
+            (a['name'] as String).compareTo(b['name'] as String));
+        break;
+      case 'za':
+        sorted.sort((a, b) =>
+            (b['name'] as String).compareTo(a['name'] as String));
+        break;
+      case 'id':
+      default:
+        sorted.sort((a, b) => (a['id'] as int).compareTo(b['id'] as int));
+        break;
+    }
+    return sorted;
+  }
 }
