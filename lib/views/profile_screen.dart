@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../utils/constants.dart';
-import '../utils/database_seeder.dart';
+
 import '../services/supabase_service.dart';
 import '../models/user_model.dart';
 import 'login_screen.dart';
@@ -20,7 +20,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   UserModel? _user;
   bool _isLoading = true;
-  bool _isSyncing = false;
 
   @override
   void initState() {
@@ -89,37 +88,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Future<void> _handleSync() async {
-    // setState: mulai syncing
-    setState(() => _isSyncing = true);
 
-    try {
-      await DatabaseSeeder.seedPokemonPool();
-
-      if (!mounted) return;
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('✅ Sync Berhasil! 151 Pokémon telah diupdate.'),
-          backgroundColor: AppColors.success,
-        ),
-      );
-    } catch (e) {
-      if (!mounted) return;
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('❌ Sync gagal: ${e.toString().replaceAll('Exception: ', '')}'),
-          backgroundColor: AppColors.error,
-        ),
-      );
-    } finally {
-      if (mounted) {
-        // setState: selesai syncing
-        setState(() => _isSyncing = false);
-      }
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -294,43 +263,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 16),
 
-                    // ── Tombol Sync Admin ──
-                    SizedBox(
-                      width: double.infinity,
-                      height: 50,
-                      child: ElevatedButton.icon(
-                        onPressed: _isSyncing ? null : _handleSync,
-                        icon: _isSyncing
-                            ? const SizedBox(
-                                width: 20,
-                                height: 20,
-                                child: CircularProgressIndicator(
-                                  color: Colors.white,
-                                  strokeWidth: 2.5,
-                                ),
-                              )
-                            : const Icon(Icons.sync_rounded),
-                        label: Text(
-                          _isSyncing
-                              ? 'Syncing...'
-                              : 'Sync Pokemon Data (Admin)',
-                          style: GoogleFonts.poppins(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF455A64),
-                          foregroundColor: Colors.white,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          elevation: 2,
-                        ),
-                      ),
-                    ),
                   ],
                 ),
               ),

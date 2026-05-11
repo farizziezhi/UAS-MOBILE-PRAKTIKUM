@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../../utils/constants.dart';
 import '../../models/berry_model.dart';
+import '../tools_detail_screen.dart';
 
 class BerryTabView extends StatelessWidget {
   final List<BerryModel> berries;
@@ -17,6 +18,15 @@ class BerryTabView extends StatelessWidget {
     required this.onRefresh,
     required this.searchQuery,
   });
+
+  void _navigateToDetail(BuildContext context, int berryId) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => ToolsDetailScreen(id: berryId, type: 'berry'),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -51,11 +61,14 @@ class BerryTabView extends StatelessWidget {
               itemCount: berries.length,
               itemBuilder: (context, index) {
                 final berry = berries[index];
-                return _buildCard(
-                  id: berry.id,
-                  name: '${berry.name.toUpperCase()} BERRY',
-                  imageUrl: berry.spriteUrl,
-                  subtitle: '',
+                return GestureDetector(
+                  onTap: () => _navigateToDetail(context, berry.id),
+                  child: _buildCard(
+                    id: berry.id,
+                    name: '${berry.name.toUpperCase()} BERRY',
+                    imageUrl: berry.spriteUrl,
+                    subtitle: '',
+                  ),
                 );
               },
             )
@@ -64,11 +77,14 @@ class BerryTabView extends StatelessWidget {
               itemCount: berries.length,
               itemBuilder: (context, index) {
                 final berry = berries[index];
-                return _buildTile(
-                  id: berry.id,
-                  name: '${berry.name.toUpperCase()} BERRY',
-                  imageUrl: berry.spriteUrl,
-                  subtitle: '',
+                return GestureDetector(
+                  onTap: () => _navigateToDetail(context, berry.id),
+                  child: _buildTile(
+                    id: berry.id,
+                    name: '${berry.name.toUpperCase()} BERRY',
+                    imageUrl: berry.spriteUrl,
+                    subtitle: '',
+                  ),
                 );
               },
             ),
@@ -160,6 +176,8 @@ class BerryTabView extends StatelessWidget {
               ],
             ),
           ),
+          // Arrow indicator
+          const Icon(Icons.chevron_right, color: AppColors.greyMedium, size: 20),
         ],
       ),
     );

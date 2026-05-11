@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../../utils/constants.dart';
 import '../../models/item_model.dart';
+import '../tools_detail_screen.dart';
 
 class ItemTabView extends StatelessWidget {
   final List<ItemModel> items;
@@ -17,6 +18,15 @@ class ItemTabView extends StatelessWidget {
     required this.onRefresh,
     required this.searchQuery,
   });
+
+  void _navigateToDetail(BuildContext context, int itemId) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => ToolsDetailScreen(id: itemId, type: 'item'),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -51,11 +61,14 @@ class ItemTabView extends StatelessWidget {
               itemCount: items.length,
               itemBuilder: (context, index) {
                 final item = items[index];
-                return _buildCard(
-                  id: item.id,
-                  name: item.name.replaceAll('-', ' ').toUpperCase(),
-                  imageUrl: item.spriteUrl,
-                  subtitle: '',
+                return GestureDetector(
+                  onTap: () => _navigateToDetail(context, item.id),
+                  child: _buildCard(
+                    id: item.id,
+                    name: item.name.replaceAll('-', ' ').toUpperCase(),
+                    imageUrl: item.spriteUrl,
+                    subtitle: '',
+                  ),
                 );
               },
             )
@@ -64,11 +77,14 @@ class ItemTabView extends StatelessWidget {
               itemCount: items.length,
               itemBuilder: (context, index) {
                 final item = items[index];
-                return _buildTile(
-                  id: item.id,
-                  name: item.name.replaceAll('-', ' ').toUpperCase(),
-                  imageUrl: item.spriteUrl,
-                  subtitle: '',
+                return GestureDetector(
+                  onTap: () => _navigateToDetail(context, item.id),
+                  child: _buildTile(
+                    id: item.id,
+                    name: item.name.replaceAll('-', ' ').toUpperCase(),
+                    imageUrl: item.spriteUrl,
+                    subtitle: '',
+                  ),
                 );
               },
             ),
@@ -160,6 +176,8 @@ class ItemTabView extends StatelessWidget {
               ],
             ),
           ),
+          // Arrow indicator
+          const Icon(Icons.chevron_right, color: AppColors.greyMedium, size: 20),
         ],
       ),
     );

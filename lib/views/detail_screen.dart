@@ -14,30 +14,37 @@ class DetailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      appBar: AppBar(
-        title: Text(
-          'Pokémon #$pokemonId',
-          style: GoogleFonts.poppins(fontWeight: FontWeight.w700),
-        ),
-      ),
-      body: FutureBuilder<PokemonDetailModel>(
-        future: PokeapiService().getPokemonDetail(pokemonId),
-        builder: (context, snapshot) {
-          // ── Loading ──
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          }
+    return FutureBuilder<PokemonDetailModel>(
+      future: PokeapiService().getPokemonDetail(pokemonId),
+      builder: (context, snapshot) {
+        final appBar = AppBar(
+          title: Text(
+            'Pokémon #$pokemonId',
+            style: GoogleFonts.poppins(fontWeight: FontWeight.w700),
+          ),
+        );
 
-          // ── Error ──
-          if (snapshot.hasError) {
-            return Center(
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Scaffold(
+            backgroundColor: AppColors.background,
+            appBar: appBar,
+            body: const Center(child: CircularProgressIndicator()),
+          );
+        }
+
+        if (snapshot.hasError) {
+          return Scaffold(
+            backgroundColor: AppColors.background,
+            appBar: appBar,
+            body: Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Icon(Icons.error_outline,
-                      size: 64, color: AppColors.error),
+                  const Icon(
+                    Icons.error_outline,
+                    size: 64,
+                    color: AppColors.error,
+                  ),
                   const SizedBox(height: 16),
                   Text(
                     snapshot.error.toString().replaceAll('Exception: ', ''),
@@ -46,14 +53,17 @@ class DetailScreen extends StatelessWidget {
                   ),
                 ],
               ),
-            );
-          }
+            ),
+          );
+        }
 
-          // ── Data Ready ──
-          final pokemon = snapshot.data!;
-          return _DetailContent(pokemon: pokemon);
-        },
-      ),
+        final pokemon = snapshot.data!;
+        return Scaffold(
+          backgroundColor: _getTypeColor(pokemon.types.first).withOpacity(0.15),
+          appBar: appBar,
+          body: _DetailContent(pokemon: pokemon),
+        );
+      },
     );
   }
 }
@@ -241,7 +251,14 @@ class _DetailContent extends StatelessWidget {
 
   Widget _buildStatsCard() {
     // Urutan stats yang ingin ditampilkan
-    const statOrder = ['hp', 'attack', 'defense', 'special-attack', 'special-defense', 'speed'];
+    const statOrder = [
+      'hp',
+      'attack',
+      'defense',
+      'special-attack',
+      'special-defense',
+      'speed',
+    ];
     const statLabels = {
       'hp': 'HP',
       'attack': 'Attack',
@@ -293,8 +310,8 @@ class _DetailContent extends StatelessWidget {
     final color = ratio > 0.6
         ? AppColors.success
         : ratio > 0.35
-            ? AppColors.gold
-            : AppColors.error;
+        ? AppColors.gold
+        : AppColors.error;
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
@@ -339,29 +356,29 @@ class _DetailContent extends StatelessWidget {
       ),
     );
   }
+}
 
-  /// Warna berdasarkan tipe Pokémon.
-  Color _getTypeColor(String type) {
-    const typeColors = {
-      'normal': Color(0xFFA8A878),
-      'fire': Color(0xFFF08030),
-      'water': Color(0xFF6890F0),
-      'grass': Color(0xFF78C850),
-      'electric': Color(0xFFF8D030),
-      'ice': Color(0xFF98D8D8),
-      'fighting': Color(0xFFC03028),
-      'poison': Color(0xFFA040A0),
-      'ground': Color(0xFFE0C068),
-      'flying': Color(0xFFA890F0),
-      'psychic': Color(0xFFF85888),
-      'bug': Color(0xFFA8B820),
-      'rock': Color(0xFFB8A038),
-      'ghost': Color(0xFF705898),
-      'dragon': Color(0xFF7038F8),
-      'dark': Color(0xFF705848),
-      'steel': Color(0xFFB8B8D0),
-      'fairy': Color(0xFFEE99AC),
-    };
-    return typeColors[type] ?? AppColors.greyMedium;
-  }
+/// Warna berdasarkan tipe Pokémon.
+Color _getTypeColor(String type) {
+  const typeColors = {
+    'normal': Color(0xFFA8A878),
+    'fire': Color(0xFFF08030),
+    'water': Color(0xFF6890F0),
+    'grass': Color(0xFF78C850),
+    'electric': Color(0xFFF8D030),
+    'ice': Color(0xFF98D8D8),
+    'fighting': Color(0xFFC03028),
+    'poison': Color(0xFFA040A0),
+    'ground': Color(0xFFE0C068),
+    'flying': Color(0xFFA890F0),
+    'psychic': Color(0xFFF85888),
+    'bug': Color(0xFFA8B820),
+    'rock': Color(0xFFB8A038),
+    'ghost': Color(0xFF705898),
+    'dragon': Color(0xFF7038F8),
+    'dark': Color(0xFF705848),
+    'steel': Color(0xFFB8B8D0),
+    'fairy': Color(0xFFEE99AC),
+  };
+  return typeColors[type] ?? AppColors.greyMedium;
 }
