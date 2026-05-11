@@ -3,6 +3,7 @@ import '../utils/constants.dart';
 import 'home_screen.dart';
 import 'shop_screen.dart';
 import 'list_pokemon_screen.dart';
+import 'item_screen.dart';
 import 'profile_screen.dart';
 
 /// MainScreen — shell utama aplikasi dengan BottomNavigationBar.
@@ -21,6 +22,7 @@ class _MainScreenState extends State<MainScreen> {
   final List<Widget> _pages = const [
     HomeScreen(),
     ListPokemonScreen(),
+    ItemScreen(),
     ShopScreen(),
     ProfileScreen(),
   ];
@@ -75,6 +77,11 @@ class _MainScreenState extends State<MainScreen> {
               icon: Icon(Icons.catching_pokemon_outlined),
               activeIcon: Icon(Icons.catching_pokemon),
               label: 'List',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.backpack_outlined),
+              activeIcon: Icon(Icons.backpack),
+              label: 'Item',
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.store_outlined),

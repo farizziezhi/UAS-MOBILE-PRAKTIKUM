@@ -1,6 +1,8 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import '../models/pokemon_detail_model.dart';
+import '../models/item_model.dart';
+import '../models/berry_model.dart';
 import '../utils/constants.dart';
 
 /// PokeapiService — menangani semua HTTP request ke PokeAPI v2.
@@ -46,6 +48,34 @@ class PokeapiService {
     } catch (e) {
       debugPrint('PokeapiService.getPokemonDetail($pokemonId) error: $e');
       throw Exception('Terjadi kesalahan saat mengambil data Pokémon #$pokemonId');
+    }
+  }
+
+  /// Mengambil detail Item berdasarkan nama dari PokeAPI.
+  Future<ItemModel> getItem(String name) async {
+    try {
+      final response = await _dio.get('/item/$name');
+      return ItemModel.fromJson(response.data as Map<String, dynamic>);
+    } on DioException catch (e) {
+      debugPrint('PokeapiService.getItem($name) DioError: ${e.type} - ${e.message}');
+      throw Exception('Gagal mengambil data Item $name');
+    } catch (e) {
+      debugPrint('PokeapiService.getItem($name) error: $e');
+      throw Exception('Terjadi kesalahan saat mengambil data Item $name');
+    }
+  }
+
+  /// Mengambil detail Berry berdasarkan nama dari PokeAPI.
+  Future<BerryModel> getBerry(String name) async {
+    try {
+      final response = await _dio.get('/berry/$name');
+      return BerryModel.fromJson(response.data as Map<String, dynamic>);
+    } on DioException catch (e) {
+      debugPrint('PokeapiService.getBerry($name) DioError: ${e.type} - ${e.message}');
+      throw Exception('Gagal mengambil data Berry $name');
+    } catch (e) {
+      debugPrint('PokeapiService.getBerry($name) error: $e');
+      throw Exception('Terjadi kesalahan saat mengambil data Berry $name');
     }
   }
 }
